@@ -113,7 +113,7 @@ module AcmePlugin
     end
 
     def request_challenge_verification(challenge)
-      challenge.request_verification
+      challenge.request_validation
     end
 
     def wait_for_status(challenge)

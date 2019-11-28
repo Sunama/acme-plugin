@@ -127,141 +127,6 @@ ZK/V50gulSGNn7WngWDJRRv5KaO27RGnpH9P4lOW3iTbHlq+AVvyoflvKeyFEEFb
     end
   end
 
-  test 'register with text based private key' do
-    cg = AcmePlugin::CertGenerator.new(private_key: PRIVATE_KEY,
-                                       directory: DIRECTORY_URL,
-                                       domain: 'example.com',
-                                       email: 'foobarbaz@example.com')
-    assert !cg.nil?
-
-    stub_request(:head, "#{API_URL}/new-reg")
-      .with(headers: { 'Accept' => '*/*' })
-      .to_return(status: 200, body: '', headers: {})
-
-    stub_request(:post, "#{API_URL}/new-reg")
-      .with(body: '{"protected":"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp3ayI6eyJlIjoiQVFBQiIsImt0eS'\
-        'I6IlJTQSIsIm4iOiJxN0gtQ2txRHZ3ekx2OWRBZ05rSmQzM2FiVEpFa0ZHSjhXbGIxRnZ1Y1F6MEFYWX'\
-        'JwWUx5ajdOYUNyQm90V1NaR2pFSnRQZ1k1M0xWWU1ET1BiOTktLTZEazNXVGhkT203U01JTlZYWlZ1Ym'\
-        'hhNmtoY1pFWFA1NEdic0NzcFBmNm5OcUJCeEhDblV3V01GOElRcWkwTVdSNHFOeG1LZEVrcE56dGFCd0'\
-        'xLU0ZWUHNRMHRGeXJHellhOEw0TkJqZWUyaWlEdWM2bHlMTkp6MnhfUUZMQWZneGw1cXdFa05FVGxNNz'\
-        'JNQlRsTTNrR1k4UjN2RkVNVEhQSUtCM3VQcHdScE1qOEw2M1JLenpmcmM5Q0Y2TDRNaG01b05GUENndm'\
-        'JDRWF6T0ctTEpwM2Q4bVlTZjBERE5RNlhoX0NnTG5TbXAzVWVmckpiQVFUZDBpSk4xa21TaV9fQmxOR1'\
-        'JDS1dFZDgyZzA2aHgwbVRhOXVZZEQxMFNXaVF5UHZIbDRzWER3M0JMN0VpOVlPNHpoOUh6ZkpzUVhxY2'\
-        'hzQnZVZ2dEVG9IZVJwMnhmS0hEcmFFZ2JPX0FxaEMxRkdkTUtPUnJMWnBMQm1oamw0MFVvMWNLUXZsbl'\
-        'ZJZFJaQjU4QnoyZUhzNDVKN0ROYktsQm12cWZPQnJFN09nOHdEbFUzWFpIZ3dRZkt4TUhBV29Qc0d2RG'\
-        '1KRjRZdFRmZ0R4NmZWS2VNbng5cXpJQ0plRlZmYnkzaUc4dE9XUFNKWFZUcXZ2QlhiQnppT0h4bV9sOH'\
-        'pma3UwUmk3RXYwWUU2VEJGWDZiNDRES0FpVW9adkUwTm9taXhhYll2ZDAwWFFPNndOMF9pdkN6Tmc0VV'\
-        'ltaDlZUzJyM1E3YmloNFkyS3MyWllxdnNkazFnLWZiNGZRcyJ9LCJub25jZSI6bnVsbH0",'\
-        '"payload":"eyJyZXNvdXJjZSI6Im5ldy1yZWciLCJjb250YWN0IjpbIm1haWx0bzpmb29iYXJiYXpAZ'\
-        'XhhbXBsZS5jb20iXX0",'\
-        '"signature":"aQ6T0XVo9jS_jXlvQ6bjAfqcrMYpQTPE9_CD7v1hDBUzKpSoygAJmrbb0kSumMkWf-r'\
-        'acxG5i7tcD4ed32ap1OsWUoPGWhXkQifAqToYMdfBzjwaS_OfjPpFflPOZmUvOygtGt3LTsdhA27PCSC'\
-        'saZDlozz2143b00QhZ-gVkFRJEwOMN22ByOsL-1_R_UEp7mqwQKzeZ_nsW7japvGWcru13bzqiD2b069'\
-        'kwrfksnMIMSjFWnJPnxCLpY-DQn8kCBeJfljW-mOJyZFck1ko0KBiOEbY_k0IJ0aspwg9lGRLkVX-wWV'\
-        '8Q_e8gwoLjmaXouUxAl2E3wNInXRJkgDOMfEUSOHzxI6WFYLzhVKVl7ktP7zx21my2vL_J_nROTDaVIU'\
-        'qJgdUgEZ40KR_Kjd_pRKPcB8kHyKtDnCopmrPXLu0QCuHYAn_M-cYgkFOyvplJNodaZfKamLuwChywPl'\
-        'DC5tr1BQvdlUVp-cwr_C_KU-Kpkws924xI0ah8ksuwsHpkp2458aVEIeDEEw7FgHZXUPKXaJcBIHjQ1R'\
-        'vnm062Ub_4LR25TrKTgftDCftK2YtN4LA-jtlfOrdM47xZatAzhmFy_vFIIu_-phh5he0nn8Mx2byjsZ'\
-        '1M-DeW0Wl9_zxhhOo1gtmFhtguCKw3W0mdcdDZmhRleNS-HtYA0w41LA"}',
-            headers: { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-                       'User-Agent' => ACME_USER_AGENT })
-      .to_return(status: 200, body: '', headers: {})
-
-    assert_nothing_raised do
-      cg.register
-    end
-  end
-
-  test 'register' do
-    cg = AcmePlugin::CertGenerator.new(private_key: 'key/test_keyfile_4096.pem',
-                                       directory: DIRECTORY_URL,
-                                       domain: 'example.com',
-                                       email: 'foobarbaz@example.com')
-    assert !cg.nil?
-
-    stub_request(:head, "#{API_URL}/new-reg")
-      .with(headers: { 'Accept' => '*/*' })
-      .to_return(status: 200, body: '', headers: {})
-
-    stub_request(:post, "#{API_URL}/new-reg")
-      .with(body: '{"protected":"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp3ayI6eyJlIjoiQVFBQiIsImt0eS'\
-                  'I6IlJTQSIsIm4iOiJxN0gtQ2txRHZ3ekx2OWRBZ05rSmQzM2FiVEpFa0ZHSjhXbGIxRnZ1Y1F6MEFYWX'\
-                  'JwWUx5ajdOYUNyQm90V1NaR2pFSnRQZ1k1M0xWWU1ET1BiOTktLTZEazNXVGhkT203U01JTlZYWlZ1Ym'\
-                  'hhNmtoY1pFWFA1NEdic0NzcFBmNm5OcUJCeEhDblV3V01GOElRcWkwTVdSNHFOeG1LZEVrcE56dGFCd0'\
-                  'xLU0ZWUHNRMHRGeXJHellhOEw0TkJqZWUyaWlEdWM2bHlMTkp6MnhfUUZMQWZneGw1cXdFa05FVGxNNz'\
-                  'JNQlRsTTNrR1k4UjN2RkVNVEhQSUtCM3VQcHdScE1qOEw2M1JLenpmcmM5Q0Y2TDRNaG01b05GUENndm'\
-                  'JDRWF6T0ctTEpwM2Q4bVlTZjBERE5RNlhoX0NnTG5TbXAzVWVmckpiQVFUZDBpSk4xa21TaV9fQmxOR1'\
-                  'JDS1dFZDgyZzA2aHgwbVRhOXVZZEQxMFNXaVF5UHZIbDRzWER3M0JMN0VpOVlPNHpoOUh6ZkpzUVhxY2'\
-                  'hzQnZVZ2dEVG9IZVJwMnhmS0hEcmFFZ2JPX0FxaEMxRkdkTUtPUnJMWnBMQm1oamw0MFVvMWNLUXZsbl'\
-                  'ZJZFJaQjU4QnoyZUhzNDVKN0ROYktsQm12cWZPQnJFN09nOHdEbFUzWFpIZ3dRZkt4TUhBV29Qc0d2RG'\
-                  '1KRjRZdFRmZ0R4NmZWS2VNbng5cXpJQ0plRlZmYnkzaUc4dE9XUFNKWFZUcXZ2QlhiQnppT0h4bV9sOH'\
-                  'pma3UwUmk3RXYwWUU2VEJGWDZiNDRES0FpVW9adkUwTm9taXhhYll2ZDAwWFFPNndOMF9pdkN6Tmc0VV'\
-                  'ltaDlZUzJyM1E3YmloNFkyS3MyWllxdnNkazFnLWZiNGZRcyJ9LCJub25jZSI6bnVsbH0",'\
-                  '"payload":"eyJyZXNvdXJjZSI6Im5ldy1yZWciLCJjb250YWN0IjpbIm1haWx0bzpmb29iYXJiYXpAZ'\
-                  'XhhbXBsZS5jb20iXX0",'\
-                  '"signature":"aQ6T0XVo9jS_jXlvQ6bjAfqcrMYpQTPE9_CD7v1hDBUzKpSoygAJmrbb0kSumMkWf-r'\
-                  'acxG5i7tcD4ed32ap1OsWUoPGWhXkQifAqToYMdfBzjwaS_OfjPpFflPOZmUvOygtGt3LTsdhA27PCSC'\
-                  'saZDlozz2143b00QhZ-gVkFRJEwOMN22ByOsL-1_R_UEp7mqwQKzeZ_nsW7japvGWcru13bzqiD2b069'\
-                  'kwrfksnMIMSjFWnJPnxCLpY-DQn8kCBeJfljW-mOJyZFck1ko0KBiOEbY_k0IJ0aspwg9lGRLkVX-wWV'\
-                  '8Q_e8gwoLjmaXouUxAl2E3wNInXRJkgDOMfEUSOHzxI6WFYLzhVKVl7ktP7zx21my2vL_J_nROTDaVIU'\
-                  'qJgdUgEZ40KR_Kjd_pRKPcB8kHyKtDnCopmrPXLu0QCuHYAn_M-cYgkFOyvplJNodaZfKamLuwChywPl'\
-                  'DC5tr1BQvdlUVp-cwr_C_KU-Kpkws924xI0ah8ksuwsHpkp2458aVEIeDEEw7FgHZXUPKXaJcBIHjQ1R'\
-                  'vnm062Ub_4LR25TrKTgftDCftK2YtN4LA-jtlfOrdM47xZatAzhmFy_vFIIu_-phh5he0nn8Mx2byjsZ'\
-                  '1M-DeW0Wl9_zxhhOo1gtmFhtguCKw3W0mdcdDZmhRleNS-HtYA0w41LA"}',
-            headers: { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-                       'User-Agent' => ACME_USER_AGENT })
-      .to_return(status: 200, body: '', headers: {})
-
-    assert_nothing_raised do
-      cg.register
-    end
-  end
-
-  test 'register_with_privkey_in_db' do
-    cg = AcmePlugin::CertGenerator.new(private_key_in_db: true,
-                                       directory: DIRECTORY_URL,
-                                       domain: 'example.com',
-                                       email: 'foobarbaz@example.com')
-    assert !cg.nil?
-
-    stub_request(:head, "#{API_URL}/new-reg")
-      .with(headers: { 'Accept' => '*/*' })
-      .to_return(status: 200, body: '', headers: {})
-
-    stub_request(:post, "#{API_URL}/new-reg")
-      .with(body: '{"protected":"eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIiwibm9uY2UiOm51bGwsImp3ayI6eyJrdH'\
-                  'kiOiJSU0EiLCJlIjoiQVFBQiIsIm4iOiJxN0gtQ2txRHZ3ekx2OWRBZ05rSmQzM2FiVEpFa0ZHSjhXbG'\
-                  'IxRnZ1Y1F6MEFYWXJwWUx5ajdOYUNyQm90V1NaR2pFSnRQZ1k1M0xWWU1ET1BiOTktLTZEazNXVGhkT2'\
-                  '03U01JTlZYWlZ1YmhhNmtoY1pFWFA1NEdic0NzcFBmNm5OcUJCeEhDblV3V01GOElRcWkwTVdSNHFOeG'\
-                  '1LZEVrcE56dGFCd0xLU0ZWUHNRMHRGeXJHellhOEw0TkJqZWUyaWlEdWM2bHlMTkp6MnhfUUZMQWZneG'\
-                  'w1cXdFa05FVGxNNzJNQlRsTTNrR1k4UjN2RkVNVEhQSUtCM3VQcHdScE1qOEw2M1JLenpmcmM5Q0Y2TD'\
-                  'RNaG01b05GUENndmJDRWF6T0ctTEpwM2Q4bVlTZjBERE5RNlhoX0NnTG5TbXAzVWVmckpiQVFUZDBpSk'\
-                  '4xa21TaV9fQmxOR1JDS1dFZDgyZzA2aHgwbVRhOXVZZEQxMFNXaVF5UHZIbDRzWER3M0JMN0VpOVlPNH'\
-                  'poOUh6ZkpzUVhxY2hzQnZVZ2dEVG9IZVJwMnhmS0hEcmFFZ2JPX0FxaEMxRkdkTUtPUnJMWnBMQm1oam'\
-                  'w0MFVvMWNLUXZsblZJZFJaQjU4QnoyZUhzNDVKN0ROYktsQm12cWZPQnJFN09nOHdEbFUzWFpIZ3dRZk'\
-                  't4TUhBV29Qc0d2RG1KRjRZdFRmZ0R4NmZWS2VNbng5cXpJQ0plRlZmYnkzaUc4dE9XUFNKWFZUcXZ2Ql'\
-                  'hiQnppT0h4bV9sOHpma3UwUmk3RXYwWUU2VEJGWDZiNDRES0FpVW9adkUwTm9taXhhYll2ZDAwWFFPNn'\
-                  'dOMF9pdkN6Tmc0VVltaDlZUzJyM1E3YmloNFkyS3MyWllxdnNkazFnLWZiNGZRcyIsImtpZCI6IlFwSG'\
-                  'dDOWxCZ0ZEX1A0dV9aejBNd2x0V1dUN1g2QlRZZnVPNUlob1VrUDAifX0",'\
-                  '"payload":"eyJyZXNvdXJjZSI6Im5ldy1yZWciLCJjb250YWN0IjpbIm1haWx0bzpmb29iYXJiYXpAZ'\
-                  'XhhbXBsZS5jb20iXX0",'\
-                  '"signature":"T4aKq85rcACJdyEEx_Dw90lLypyPba6GSyG1YlFjCMwM7qdRlCsb3YIJE_Eia-A9IVl'\
-                  'cXKc2rzvVOPvGB2bYmPCxep5o7uy1mkC7hKJhSEw97mT_sidrLamEKIrYtnVrW0KSO3EKEY-rUSMIeOA'\
-                  'qLuZosSXLCEDlQTLqPUJPrhm8pDBRLzEqUO1HIMLfOEH5bWwXHofxL_QqUQjzMqIh_VWqy08MxuWEThD'\
-                  'UyKPewBx1E_Y0H-vsM_D39SJA04s9fnIGyOlXISL1LZ9pFZ_W5rF25_P9vwks9m7E8iZFo-rFc073DsM'\
-                  'zc_-5VbUgAoAqDZA69q8FTkgUkA6pu-vZsxeIb6OUNS6wxt6U4dqYS1aBXnhLeKvbIb7NqFmY8erzvcG'\
-                  'XBvab1F0ndg6sw5PmrDZyOzcCKdA9eQk6LqCnfh8TcoywmJiqm2Ck49BUUe4t98AjvMNhaHel4Vn4HUX'\
-                  'GX5xOEmt7gtsIE6YJP04ZoRKeWCrbYwjYIfLNlsbXpZj5oXPzBxOvwBuS6KL2HweeUGObiBsxRLsc1Bo'\
-                  'A_Na8Y2HtkWeZyUQPY1G3eSTPbBKR94T20LhcDSdNInzIFIhE5qI-WWCgHws6jB1K4Iip58zMgeTjGsD'\
-                  '5Rc8ttBJwfprac8hBqMST_rzo-gn70b-iT3PJkasUbm32UwOxXtavJ5g"}',
-            headers: { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-                       'User-Agent' => ACME_USER_AGENT })
-      .to_return(status: 200, body: '', headers: {})
-
-    assert_nothing_raised do
-      cg.register
-    end
-  end
 
   test 'register_and_authorize' do
     cg = AcmePlugin::CertGenerator.new(private_key: 'key/test_keyfile_4096.pem',
@@ -270,82 +135,16 @@ ZK/V50gulSGNn7WngWDJRRv5KaO27RGnpH9P4lOW3iTbHlq+AVvyoflvKeyFEEFb
                                        email: 'foobarbaz@example.com')
     assert !cg.nil?
 
-    stub_request(:head, "#{API_URL}/new-reg")
-      .with(headers: { 'Accept' => '*/*' })
-      .to_return(status: 200, body: '', headers: {})
-
-    protected_field = '"protected":"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp3ayI6eyJlIjoiQVFBQiIsImt0eS'\
-                  'I6IlJTQSIsIm4iOiJxN0gtQ2txRHZ3ekx2OWRBZ05rSmQzM2FiVEpFa0ZHSjhXbGIxRnZ1Y1F6MEFYWX'\
-                  'JwWUx5ajdOYUNyQm90V1NaR2pFSnRQZ1k1M0xWWU1ET1BiOTktLTZEazNXVGhkT203U01JTlZYWlZ1Ym'\
-                  'hhNmtoY1pFWFA1NEdic0NzcFBmNm5OcUJCeEhDblV3V01GOElRcWkwTVdSNHFOeG1LZEVrcE56dGFCd0'\
-                  'xLU0ZWUHNRMHRGeXJHellhOEw0TkJqZWUyaWlEdWM2bHlMTkp6MnhfUUZMQWZneGw1cXdFa05FVGxNNz'\
-                  'JNQlRsTTNrR1k4UjN2RkVNVEhQSUtCM3VQcHdScE1qOEw2M1JLenpmcmM5Q0Y2TDRNaG01b05GUENndm'\
-                  'JDRWF6T0ctTEpwM2Q4bVlTZjBERE5RNlhoX0NnTG5TbXAzVWVmckpiQVFUZDBpSk4xa21TaV9fQmxOR1'\
-                  'JDS1dFZDgyZzA2aHgwbVRhOXVZZEQxMFNXaVF5UHZIbDRzWER3M0JMN0VpOVlPNHpoOUh6ZkpzUVhxY2'\
-                  'hzQnZVZ2dEVG9IZVJwMnhmS0hEcmFFZ2JPX0FxaEMxRkdkTUtPUnJMWnBMQm1oamw0MFVvMWNLUXZsbl'\
-                  'ZJZFJaQjU4QnoyZUhzNDVKN0ROYktsQm12cWZPQnJFN09nOHdEbFUzWFpIZ3dRZkt4TUhBV29Qc0d2RG'\
-                  '1KRjRZdFRmZ0R4NmZWS2VNbng5cXpJQ0plRlZmYnkzaUc4dE9XUFNKWFZUcXZ2QlhiQnppT0h4bV9sOH'\
-                  'pma3UwUmk3RXYwWUU2VEJGWDZiNDRES0FpVW9adkUwTm9taXhhYll2ZDAwWFFPNndOMF9pdkN6Tmc0VV'\
-                  'ltaDlZUzJyM1E3YmloNFkyS3MyWllxdnNkazFnLWZiNGZRcyJ9LCJub25jZSI6bnVsbH0"'
-    stub_request(:post, "#{API_URL}/new-reg")
-      .with(body: "{#{protected_field},"\
-                  '"payload":"eyJyZXNvdXJjZSI6Im5ldy1yZWciLCJjb250YWN0IjpbIm1haWx0bzpmb29iYXJiYXpAZ'\
-                  'XhhbXBsZS5jb20iXX0",'\
-                  '"signature":"aQ6T0XVo9jS_jXlvQ6bjAfqcrMYpQTPE9_CD7v1hDBUzKpSoygAJmrbb0kSumMkWf-r'\
-                  'acxG5i7tcD4ed32ap1OsWUoPGWhXkQifAqToYMdfBzjwaS_OfjPpFflPOZmUvOygtGt3LTsdhA27PCSC'\
-                  'saZDlozz2143b00QhZ-gVkFRJEwOMN22ByOsL-1_R_UEp7mqwQKzeZ_nsW7japvGWcru13bzqiD2b069'\
-                  'kwrfksnMIMSjFWnJPnxCLpY-DQn8kCBeJfljW-mOJyZFck1ko0KBiOEbY_k0IJ0aspwg9lGRLkVX-wWV'\
-                  '8Q_e8gwoLjmaXouUxAl2E3wNInXRJkgDOMfEUSOHzxI6WFYLzhVKVl7ktP7zx21my2vL_J_nROTDaVIU'\
-                  'qJgdUgEZ40KR_Kjd_pRKPcB8kHyKtDnCopmrPXLu0QCuHYAn_M-cYgkFOyvplJNodaZfKamLuwChywPl'\
-                  'DC5tr1BQvdlUVp-cwr_C_KU-Kpkws924xI0ah8ksuwsHpkp2458aVEIeDEEw7FgHZXUPKXaJcBIHjQ1R'\
-                  'vnm062Ub_4LR25TrKTgftDCftK2YtN4LA-jtlfOrdM47xZatAzhmFy_vFIIu_-phh5he0nn8Mx2byjsZ'\
-                  '1M-DeW0Wl9_zxhhOo1gtmFhtguCKw3W0mdcdDZmhRleNS-HtYA0w41LA"}',
-            headers: { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-                       'User-Agent' => ACME_USER_AGENT })
-      .to_return(status: 200, body: '', headers: {})
-
-    stub_request(:post, "#{API_URL}/new-authz")
-      .with(body: "{#{protected_field},"\
-                  '"payload":"eyJyZXNvdXJjZSI6Im5ldy1hdXRoeiIsImlkZW50aWZpZXIiOnsidHlwZSI6ImRucyIsI'\
-                  'nZhbHVlIjoiZXhhbXBsZS5jb20ifX0",'\
-                  '"signature":"NIo2YSDVmY-ILSdUXu4r1sBi31YYEHGvAz0t9IskSjCDl3A2C7fKXXejxLEU9aHvjR8'\
-                  '9ZwrQtdDjhSVvZ5tCOkN8UhZ_jo2Y9iDIoNijd7t11jCxiv9epgQ83cUXtqgYLQnfpNNFlxd24yyLNNe'\
-                  'K6NM4mIhf5fyji6skTOrv4TPg4ZZzx107dmPmGsKQpSo2uRb1bV6H63qOwqjfp4LYM_HrHTH-L_HQTgt'\
-                  '1fV4pmlTYlmaK__OLgxBXdVFgSN2yAUXPl3b9xYsGq3yEdXlGFv_f2iNbfhhiFHl_ZbRsjbLY5QU5TRa'\
-                  'Y6w5LjVkMwNLuusAeR5SwkOjGYQw-PQ303xuCx2WhlcIVlz06Lex9zrYH7TVc1Tfl5aiaqw4lABJoFu8'\
-                  'YLWx83gQZbeyBJJ612e_oNqsbmd0RWytXzS-qydLmpjl2KS7U_877JIoZPePwqzbuNoUmeVfqQcCGcpM'\
-                  't1atBAoBVgOKW5cWlEhZD4BRY_q-dX2hcR-7T1suLdMpEc1b_JQr0EVxgz0rZWcE3xAtlQLYZtC7n_nW'\
-                  'B4EiQzRiiP1mgPRwdmASmAAMp7ToW53lYh-vLxpHX7CzLdug2AuvFkG6ajaGFMzZaJ4dyxf0GbznSNyV'\
-                  'ulEJlxSt81MVthCX3JjUtRDcJHZx6tQFR1Gm1RUDE7Sob0Xe6jZKfqRE"}',
-            headers: { 'Accept' => '*/*', 'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-                       'User-Agent' => ACME_USER_AGENT })
-      .to_return(status: 200,
-                 body: '{'\
-                       ' "status": "valid",'\
-                       ' "expires": "2020-12-31T23:59:59+01:00",'\
-                       ' "identifier":'\
-                       ' {'\
-                       '   "type": "dns", "value": "example.org"'\
-                       ' },'\
-                       ' "challenges":'\
-                       ' ['\
-                       ' {'\
-                       ' "type": "http-01",'\
-                       ' "status": "pending",'\
-                       " \"uri\": \"#{API_URL}/challenge/JmusiS7mAL_OZ1tIbwQxpYadpM9E3Azbywa6KSveuEk/93\","\
-                       ' "token":"-Jbrff2stnTiZXFFKJHXtYrZof2dqlQaegRbeG1t6BY"'\
-                       ' }'\
-                       ' ],'\
-                       ' "combinations":[[0]]'\
-                       '}',
-                 headers: { 'Content-Type' => 'application/json',
-                            'Link' => "<#{API_URL}/new-cert>;rel=\"next\"",
-                            'Location' => "#{API_URL}/authz/JmusiS7mAL_OZ1tIbwQxpYadpM9E3Azbywa6KSveuEk",
-                            'Replay-Nonce' => 'Hdhg8ovViG7ipkQrQRW2dsDbK5vxhGd_4T9HDqg3u4c' })
+    stub_request(:get, "https://acme-staging-v02.api.letsencrypt.org/directory").
+      with(  headers: {
+        'Accept'=>'*/*',
+        'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+        'User-Agent'=>'Acme::Client v2.0.5 (https://github.com/unixcharles/acme-client)'
+        }).
+      to_return(status: 200, body: "", headers: {})
 
     assert_nothing_raised do
       cg.register
-      cg.authorize
     end
   end
 end
