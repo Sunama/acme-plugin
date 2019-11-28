@@ -135,8 +135,8 @@ module AcmePlugin
     end
 
     def download_cerificate(domains)
-      csr = Acme::Client::CertificateRequest.new(common_name: domains[0], names: domains)
-      @order.finalize(csr: csr)
+      @csr = Acme::Client::CertificateRequest.new(common_name: domains[0], names: domains)
+      @order.finalize(csr: @csr)
 
       sleep(1) while @order.status == 'processing'
 
@@ -146,9 +146,9 @@ module AcmePlugin
     # Save the certificate and key
     def save_certificate(certificate)
       return unless certificate
-      return HerokuOutput.new(common_domain_name, certificate).output unless ENV['DYNO'].nil?
+      return HerokuOutput.new(common_domain_name, certificate, @csr).output unless ENV['DYNO'].nil?
       output_dir = File.join(Rails.root, @options[:output_cert_dir])
-      return FileOutput.new(common_domain_name, certificate, output_dir).output if File.directory?(output_dir)
+      return FileOutput.new(common_domain_name, certificate, @csr, output_dir).output if File.directory?(output_dir)
       Rails.logger.error("Output directory: '#{output_dir}' does not exist!")
     end
   end

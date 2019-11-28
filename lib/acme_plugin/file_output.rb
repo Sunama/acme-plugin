@@ -2,8 +2,8 @@ require 'acme_plugin/certificate_output'
 
 module AcmePlugin
   class FileOutput < CertificateOutput
-    def initialize(domain, cert, out_dir)
-      super(domain, cert)
+    def initialize(domain, cert, csr, out_dir)
+      super(domain, cert, csr)
       @output_dir = out_dir
     end
 

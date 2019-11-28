@@ -2,8 +2,8 @@ require 'acme_plugin/certificate_output'
 
 module AcmePlugin
   class HerokuOutput < CertificateOutput
-    def initialize(domain, cert)
-      super(domain, cert)
+    def initialize(domain, cert, csr)
+      super(domain, cert, csr)
     end
 
     def output_cert(cert_type, cert_content)
