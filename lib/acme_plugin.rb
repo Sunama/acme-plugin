@@ -38,7 +38,7 @@ module AcmePlugin
 
     def authorize_and_handle_challenge(domains)
       result = false
-      @order = order(domains)
+      @order = new_order(domains)
       @order.authorizations.each do |authorization|
         challenge = authorization.http
         handle_challenge(challenge)
@@ -94,7 +94,7 @@ module AcmePlugin
       @domain ||= @options[:cert_name] || @options[:domain].split(' ').first.to_s
     end
 
-    def order(domains)
+    def new_order(domains)
       Rails.logger.info("Order new certificate...")
       @authorizations = client.new_order(identifiers: domains)
     end
