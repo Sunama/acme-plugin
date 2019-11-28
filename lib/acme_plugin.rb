@@ -96,7 +96,7 @@ module AcmePlugin
 
     def order(domains)
       Rails.logger.info("Order new certificate...")
-      @authorizations = client.new_order(identifiers: domain)
+      @authorizations = client.new_order(identifiers: domains)
     end
 
     def store_challenge(challenge)
