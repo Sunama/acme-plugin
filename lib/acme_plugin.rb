@@ -135,7 +135,7 @@ module AcmePlugin
     end
 
     def download_cerificate(domains)
-      csr = Acme::Client::CertificateRequest.new(private_key: private_key, common_name: domains[0], names: domains)
+      csr = Acme::Client::CertificateRequest.new(common_name: domains[0], names: domains)
       @order.finalize(csr: csr)
 
       sleep(1) while order.status == 'processing'
