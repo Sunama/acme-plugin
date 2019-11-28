@@ -9,7 +9,7 @@ module AcmePlugin
     def output
       display_info
 
-      output_cert('certificate.pem', @cerificate)
+      output_cert('certificate.pem', @certificate)
       output_cert('key.pem', @csr.private_key)
     end
   end
