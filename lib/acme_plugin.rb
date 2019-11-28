@@ -31,25 +31,26 @@ module AcmePlugin
       return unless authorize_and_handle_challenge(domains)
       # We can now request a certificate
       Rails.logger.info('Creating CSR...')
-      @cert = @client.new_certificate(Acme::Client::CertificateRequest.new(names: domains))
+      @cert = download_cerificate(domains)
       save_certificate(@cert)
       Rails.logger.info('Certificate has been generated.')
     end
 
     def authorize_and_handle_challenge(domains)
       result = false
-      domains.each do |domain|
-        authorize(domain)
-        handle_challenge
-        request_challenge_verification
-        result = valid_verification_status
+      @order = order(domains)
+      @order.authorizations.each do |authorization|
+        challenge = authorization.http
+        handle_challenge(challenge)
+        request_challenge_verification(challenge)
+        result = valid_verification_status(challenge)
         break unless result
       end
       result
     end
 
     def client
-      @client ||= Acme::Client.new(private_key: private_key, endpoint: @options[:endpoint])
+      @client ||= Acme::Client.new(private_key: private_key, directory: @options[:directory])
     end
 
     def private_key
@@ -83,8 +84,7 @@ module AcmePlugin
 
     def register
       Rails.logger.info('Trying to register at Let\'s Encrypt service...')
-      registration = client.register(contact: "mailto:#{@options[:email]}")
-      registration.agree_terms
+      registration = client.new_account(contact: "mailto:#{@options[:email]}", terms_of_service_agreed: true)
       Rails.logger.info('Registration succeed.')
     rescue => e
       Rails.logger.info("#{e.class} - #{e.message}. Already registered.")
@@ -94,9 +94,9 @@ module AcmePlugin
       @domain ||= @options[:cert_name] || @options[:domain].split(' ').first.to_s
     end
 
-    def authorize(domain = common_domain_name)
-      Rails.logger.info("Sending authorization request for: #{domain}...")
-      @authorization = client.authorize(domain: domain)
+    def order(domains)
+      Rails.logger.info("Order new certificate...")
+      @authorizations = client.new_order(identifiers: domain)
     end
 
     def store_challenge(challenge)
@@ -108,30 +108,39 @@ module AcmePlugin
       sleep(2)
     end
 
-    def handle_challenge
-      @challenge = @authorization.http01
-      store_challenge(@challenge)
+    def handle_challenge(challenge)
+      store_challenge(challenge)
     end
 
-    def request_challenge_verification
-      @challenge.request_verification
+    def request_challenge_verification(challenge)
+      challenge.request_verification
     end
 
     def wait_for_status(challenge)
       Rails.logger.info('Waiting for challenge status...')
       counter = 0
-      while challenge.verify_status == 'pending' && counter < 10
+      while challenge.status == 'pending' && counter < 10
         sleep(1)
+        challenge.reload
         counter += 1
       end
     end
 
-    def valid_verification_status
-      wait_for_status(@challenge)
-      return true if @challenge.verify_status == 'valid'
+    def valid_verification_status(challenge)
+      wait_for_status(challenge)
+      return true if challenge.status == 'valid'
       Rails.logger.error('Challenge verification failed! ' \
-        "Error: #{@challenge.error['type']}: #{@challenge.error['detail']}")
+        "Error: #{challenge.error['type']}: #{challenge.error['detail']}")
       false
+    end
+
+    def download_cerificate(domains)
+      csr = Acme::Client::CertificateRequest.new(private_key: private_key, common_name: domains[0], names: domains)
+      @order.finalize(csr: csr)
+
+      sleep(1) while order.status == 'processing'
+
+      @order.certificate
     end
 
     # Save the certificate and key

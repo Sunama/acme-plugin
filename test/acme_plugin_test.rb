@@ -1,10 +1,10 @@
 require 'test_helper'
 
 class AcmePluginTest < ActiveSupport::TestCase
-  ACME_VERSION = 'v0.6.2'.freeze
+  ACME_VERSION = 'v2.0.5'.freeze
   ACME_USER_AGENT = "Acme::Client #{ACME_VERSION} (https://github.com/unixcharles/acme-client)".freeze
-  ENDPOINT_URL = 'https://acme-staging.api.letsencrypt.org'.freeze
-  API_URL = "#{ENDPOINT_URL}/acme".freeze
+  DIRECTORY_URL = 'https://acme-staging-v02.api.letsencrypt.org/directory'.freeze
+  API_URL = "#{DIRECTORY_URL}".freeze
   PRIVATE_KEY = %(
 -----BEGIN RSA PRIVATE KEY-----
 MIIJKQIBAAKCAgEAq7H+CkqDvwzLv9dAgNkJd33abTJEkFGJ8Wlb1FvucQz0AXYr
@@ -72,7 +72,7 @@ ZK/V50gulSGNn7WngWDJRRv5KaO27RGnpH9P4lOW3iTbHlq+AVvyoflvKeyFEEFb
 
   test 'if_fail_when_private_key_is_nil' do
     exception = assert_raises RuntimeError do
-      cg = AcmePlugin::CertGenerator.new(private_key: nil)
+      cg = AcmePlugin::CertGenerator.new(private_key: nil, directory: DIRECTORY_URL)
       cg.client
     end
     assert_equal 'Private key is not set, please check your config/acme_plugin.yml file!', exception.message
@@ -80,14 +80,14 @@ ZK/V50gulSGNn7WngWDJRRv5KaO27RGnpH9P4lOW3iTbHlq+AVvyoflvKeyFEEFb
 
   test 'if_fail_when_private_key_is_empty' do
     exception = assert_raises RuntimeError do
-      cg = AcmePlugin::CertGenerator.new(private_key: '')
+      cg = AcmePlugin::CertGenerator.new(private_key: '', directory: DIRECTORY_URL)
       cg.client
     end
     assert_equal 'Private key is not set, please check your config/acme_plugin.yml file!', exception.message
   end
 
   test 'if_fail_when_private_key_is_directory' do
-    options = { private_key: 'public' }
+    options = { private_key: 'public', directory: DIRECTORY_URL }
     exception = assert_raises RuntimeError do
       cg = AcmePlugin::CertGenerator.new(options)
       cg.client
@@ -97,7 +97,7 @@ ZK/V50gulSGNn7WngWDJRRv5KaO27RGnpH9P4lOW3iTbHlq+AVvyoflvKeyFEEFb
 
   test 'if_keysize_smaller_than_2048_is_invalid' do
     exception = assert_raises RuntimeError do
-      cg = AcmePlugin::CertGenerator.new(private_key: 'key/test_keyfile_1024.pem')
+      cg = AcmePlugin::CertGenerator.new(private_key: 'key/test_keyfile_1024.pem', directory: DIRECTORY_URL)
       cg.client
     end
     assert_equal 'Invalid key size: 1024. Required size is between 2048 - 4096 bits', exception.message
@@ -105,7 +105,7 @@ ZK/V50gulSGNn7WngWDJRRv5KaO27RGnpH9P4lOW3iTbHlq+AVvyoflvKeyFEEFb
 
   test 'if_keysize_greater_than_4096_is_invalid' do
     exception = assert_raises RuntimeError do
-      cg = AcmePlugin::CertGenerator.new(private_key: 'key/test_keyfile_8192.pem')
+      cg = AcmePlugin::CertGenerator.new(private_key: 'key/test_keyfile_8192.pem', directory: DIRECTORY_URL)
       cg.client
     end
     assert_equal 'Invalid key size: 8192. Required size is between 2048 - 4096 bits', exception.message
@@ -113,7 +113,7 @@ ZK/V50gulSGNn7WngWDJRRv5KaO27RGnpH9P4lOW3iTbHlq+AVvyoflvKeyFEEFb
 
   test 'if_keysize_equal_4096_is_valid' do
     assert_nothing_raised do
-      cg = AcmePlugin::CertGenerator.new(private_key: 'key/test_keyfile_4096.pem')
+      cg = AcmePlugin::CertGenerator.new(private_key: 'key/test_keyfile_4096.pem', directory: DIRECTORY_URL)
       assert !cg.nil?
       cg.client
     end
@@ -121,7 +121,7 @@ ZK/V50gulSGNn7WngWDJRRv5KaO27RGnpH9P4lOW3iTbHlq+AVvyoflvKeyFEEFb
 
   test 'if_keysize_equal_2048_is_valid' do
     assert_nothing_raised do
-      cg = AcmePlugin::CertGenerator.new(private_key: 'key/test_keyfile_2048.pem')
+      cg = AcmePlugin::CertGenerator.new(private_key: 'key/test_keyfile_2048.pem', directory: DIRECTORY_URL)
       assert !cg.nil?
       cg.client
     end
@@ -129,7 +129,7 @@ ZK/V50gulSGNn7WngWDJRRv5KaO27RGnpH9P4lOW3iTbHlq+AVvyoflvKeyFEEFb
 
   test 'register with text based private key' do
     cg = AcmePlugin::CertGenerator.new(private_key: PRIVATE_KEY,
-                                       endpoint: ENDPOINT_URL,
+                                       directory: DIRECTORY_URL,
                                        domain: 'example.com',
                                        email: 'foobarbaz@example.com')
     assert !cg.nil?
@@ -174,7 +174,7 @@ ZK/V50gulSGNn7WngWDJRRv5KaO27RGnpH9P4lOW3iTbHlq+AVvyoflvKeyFEEFb
 
   test 'register' do
     cg = AcmePlugin::CertGenerator.new(private_key: 'key/test_keyfile_4096.pem',
-                                       endpoint: ENDPOINT_URL,
+                                       directory: DIRECTORY_URL,
                                        domain: 'example.com',
                                        email: 'foobarbaz@example.com')
     assert !cg.nil?
@@ -219,7 +219,7 @@ ZK/V50gulSGNn7WngWDJRRv5KaO27RGnpH9P4lOW3iTbHlq+AVvyoflvKeyFEEFb
 
   test 'register_with_privkey_in_db' do
     cg = AcmePlugin::CertGenerator.new(private_key_in_db: true,
-                                       endpoint: ENDPOINT_URL,
+                                       directory: DIRECTORY_URL,
                                        domain: 'example.com',
                                        email: 'foobarbaz@example.com')
     assert !cg.nil?
@@ -265,7 +265,7 @@ ZK/V50gulSGNn7WngWDJRRv5KaO27RGnpH9P4lOW3iTbHlq+AVvyoflvKeyFEEFb
 
   test 'register_and_authorize' do
     cg = AcmePlugin::CertGenerator.new(private_key: 'key/test_keyfile_4096.pem',
-                                       endpoint: ENDPOINT_URL,
+                                       directory: DIRECTORY_URL,
                                        domain: 'example.com',
                                        email: 'foobarbaz@example.com')
     assert !cg.nil?
